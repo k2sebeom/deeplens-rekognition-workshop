@@ -1,17 +1,20 @@
-baseURL = "/analytics201/"
+# baseURL 변경
+baseURL = "deeplens-rekognition"
 languageCode = "ko-KR"
 defaultContentLanguage = "ko"
 
-title = "AWS Analytics 서비스 워크샵"
+# title 변경
+title = "AWS DeepLens를 이용한 얼굴 인식 기기 만들기"
 theme = "hugo-theme-learn"
 themesdir = "."
 metaDataFormat = "yaml"
 defaultContentLanguageInSubdir= true
 #ignoreFiles = [ "\\.*lab3\\.*" ]
 
+# description, author 변경
 [params]
-  description = "AWS Analytics Services Workshop"
-  author = "Inhwan Hwang"
+  description = "AWS DeepLens 와  Amazon Rekognition 을 이용한 얼굴 인식 기기 만들기"
+  author = "SeBeom Lee"
   showVisitedLinks = true
   disableBreadcrumb = false
   disableNextPrev = false
@@ -21,7 +24,7 @@ defaultContentLanguageInSubdir= true
 home = [ "HTML", "RSS", "JSON"]
 
 [Languages.ko]
-title = "AWS Analytics 서비스 워크샵"
+title = "AWS DeepLens를 이용한 얼굴 인식 기기 만들기"
 weight = 1
 languageName = "한국어"
 
