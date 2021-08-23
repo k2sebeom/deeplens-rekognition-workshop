@@ -1,5 +1,5 @@
 # baseURL 변경
-baseURL = "deeplens-rekognition"
+baseURL = "/"
 languageCode = "ko-KR"
 defaultContentLanguage = "ko"
 
