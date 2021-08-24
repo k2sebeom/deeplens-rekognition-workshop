@@ -21,7 +21,7 @@ pre: "<b>1. </b>"
     * Device 페이지로 이동하면, Device Status 가 In progress 에서 Registered 로 바뀔 때까지 기다립니다.
     * 등록이 완료되면 다음과 같은 화면이 나옵니다.
 
-![Success](./images/reg.png)
+![Success](./images/regi.png)
 
 
 
