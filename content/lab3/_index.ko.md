@@ -251,6 +251,8 @@ if cloud_output:
 ```
 만약 이미지에서 얼굴이 한 개라도 검출된다면 Rekognition API 를 호출하여 결과를 받아온 후, 유명인들의 얼굴에는 알맞은 라벨을 삽입하고, 결과가 없는 얼굴은 라벨이 없이 표시만 합니다.
 
+여러 개의 얼굴을 인식하고 싶다면, [다음 코드](https://github.com/k2sebeom/DeepLens-Rekognition-Demo/blob/main/multi-face-compare.py) 를 참조하세요.
+
 ### 함수를 프로젝트에 적용하기
 
 1. 코드를 변경했으면, Deploy 를 눌러서 Lambda 함수를 저장합니다.
