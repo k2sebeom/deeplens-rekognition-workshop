@@ -8,6 +8,8 @@ pre: "<b>1. </b>"
 
 워크샵을 시작하기에 앞서, 작동하는 DeepLens 기기와 AWS 계정을 준비해 주십시오. 워크샵을 진행하기 위해 DeepLens 기기를 계정에 등록해야 합니다.
 
+MFA 가 활성화되지 않은 계정은 등록을 진행할 수 없습니다. 과정을 시작하기 앞서, IAM 콘솔에서 MFA 를 등록해 주세요.
+
 1. [AWS DeepLens 콘솔창](https://console.aws.amazon.com/deeplens) 에 접속한 후, Register device 버튼을 누릅니다.
 2. 가지고 있는 기기의 버전을 확인한 후, Start 버튼을 누릅니다.
 3. 화면의 안내를 따라, 기기 연결을 시작합니다.
