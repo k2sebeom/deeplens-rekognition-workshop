@@ -1,0 +1,232 @@
+<!doctype html><html lang=ko class="js csstransforms3d">
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=generator content="Hugo 0.92.2">
+<meta name=description content="AWS DeepLens 와  Amazon Rekognition 을 이용한 얼굴 인식 기기 만들기">
+<meta name=author content="SeBeom Lee">
+<link rel=icon href=/images/favicon.png type=image/png>
+<title>여러 개의 얼굴 인식하기 (심화) :: AWS DeepLens를 이용한 얼굴 인식 기기 만들기</title>
+<link href=/css/nucleus.css?1645410251 rel=stylesheet>
+<link href=/css/fontawesome-all.min.css?1645410251 rel=stylesheet>
+<link href=/css/hybrid.css?1645410251 rel=stylesheet>
+<link href=/css/featherlight.min.css?1645410251 rel=stylesheet>
+<link href=/css/perfect-scrollbar.min.css?1645410251 rel=stylesheet>
+<link href=/css/auto-complete.css?1645410251 rel=stylesheet>
+<link href=/css/atom-one-dark-reasonable.css?1645410251 rel=stylesheet>
+<link href=/css/theme.css?1645410251 rel=stylesheet>
+<link href=/css/hugo-theme.css?1645410251 rel=stylesheet>
+<link href=/css/theme-aws.css?1645410251 rel=stylesheet>
+<script src=/js/jquery-3.3.1.min.js?1645410251></script>
+<style>:root #header+#content>#left>#rlblock_left{display:none!important}</style>
+</head>
+<body data-url=/lab3/lab3.1/>
+<nav id=sidebar class=showVisitedLinks>
+<div id=header-wrapper>
+<div id=header>
+<a id=logo href=/>
+<img src=/images/logo.png height=70px>
+</a>
+</div>
+<div class=searchbox>
+<label for=search-by><i class="fas fa-search"></i></label>
+<input data-search-input id=search-by type=search placeholder>
+<span data-search-clear><i class="fas fa-times"></i></span>
+</div>
+<script type=text/javascript src=/js/lunr.min.js?1645410251></script>
+<script type=text/javascript src=/js/auto-complete.js?1645410251></script>
+<script type=text/javascript>var baseurl="/"</script>
+<script type=text/javascript src=/js/search.js?1645410251></script>
+</div>
+<div class=highlightable>
+<ul class=topics>
+<li data-nav-id=/lab0/ title="워크샵 시작 전 준비 사항" class=dd-item>
+<a href=/lab0/>
+<b>1. </b>워크샵 시작 전 준비 사항
+<i class="fas fa-check read-icon"></i>
+</a>
+</li>
+<li data-nav-id=/lab1/ title="얼굴 인식 프로젝트 배포하기" class=dd-item>
+<a href=/lab1/>
+<b>2. </b>얼굴 인식 프로젝트 배포하기
+<i class="fas fa-check read-icon"></i>
+</a>
+</li>
+<li data-nav-id=/lab2/ title="프로젝트 출력 보기" class=dd-item>
+<a href=/lab2/>
+<b>3. </b>프로젝트 출력 보기
+<i class="fas fa-check read-icon"></i>
+</a>
+</li>
+<li data-nav-id=/lab3/ title="Amazon Rekognition 연동하기" class="dd-item
+parent">
+<a href=/lab3/>
+<b>4. </b>Amazon Rekognition 연동하기
+<i class="fas fa-check read-icon"></i>
+</a>
+<ul>
+<li data-nav-id=/lab3/lab3.1/ title="여러 개의 얼굴 인식하기 (심화)" class="dd-item
+parent
+active">
+<a href=/lab3/lab3.1/>
+<b>4-1. </b>여러 개의 얼굴 인식하기 (심화)
+<i class="fas fa-check read-icon"></i>
+</a>
+</li>
+</ul>
+</li>
+</ul>
+<section id=shortcuts>
+<h3></h3>
+<ul>
+<li>
+<a class=padding href=/credits/><i class="fas fa-fw fa-bullhorn"></i> 크레딧</a>
+</li>
+</ul>
+</section>
+<section id=prefooter>
+<hr>
+<ul>
+<li><a class=padding href=# data-clear-history-toggle><i class="fas fa-history fa-fw"></i> </a></li>
+</ul>
+</section>
+<section id=footer>
+© 2020 Amazon Web Services, Inc. or its Affiliates. All rights reserved.
+</section>
+</div>
+</nav>
+<section id=body>
+<div id=overlay></div>
+<div class="padding highlightable">
+<div>
+<div id=top-bar>
+<div id=breadcrumbs itemscope itemtype=http://data-vocabulary.org/Breadcrumb>
+<span id=sidebar-toggle-span>
+<a href=# id=sidebar-toggle data-sidebar-toggle>
+<i class="fas fa-bars"></i>
+</a>
+</span>
+<span id=toc-menu><i class="fas fa-list-alt"></i></span>
+<span class=links>
+<a href=/>AWS DeepLens 로 얼굴 인식 기기 만들기</a> > <a href=/lab3/>Amazon Rekognition 연동하기</a> > 여러 개의 얼굴 인식하기 (심화)
+</span>
+</div>
+<div class=progress>
+<div class=wrapper>
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#인식하려는-얼굴을-위한-s3-생성>인식하려는 얼굴을 위한 S3 생성</a></li>
+<li><a href=#deeplens-람다-함수-템플릿-구성>DeepLens 람다 함수 템플릿 구성</a></li>
+<li><a href=#람다-함수-생성하기>람다 함수 생성하기</a></li>
+<li><a href=#딥렌즈-프로젝트-생성>딥렌즈 프로젝트 생성</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div id=head-tags>
+</div>
+<div id=body-inner>
+<h1>
+여러 개의 얼굴 인식하기 (심화)
+</h1>
+<h3 id=인식하려는-얼굴을-위한-s3-생성>인식하려는 얼굴을 위한 S3 생성</h3>
+<ol>
+<li>S3 버켓을 하나 생성합니다.</li>
+<li>인식하려는 얼굴 사진을 업로드 합니다.</li>
+</ol>
+<h3 id=deeplens-람다-함수-템플릿-구성>DeepLens 람다 함수 템플릿 구성</h3>
+<p><a href=https://docs.aws.amazon.com/deeplens/latest/dg/samples/deeplens_inference_function_template.zip>AWS 딥렌즈 람다 함수 템플릿</a> 을 다운 받은 후 압축해제를 합니다.</p>
+<p>폴더 내에는 다음과 같은 파일들이 들어 있습니다.</p>
+<ol>
+<li>lambda_function.py: 딥렌즈 내부에서 돌아가는 실제 함수입니다.</li>
+<li>local_display.py: 결과 영상 송출을 위한 파일입니다.</li>
+<li>greengrasssdk: AWS Greengrass 배포를 위한 sdk 입니다.</li>
+</ol>
+<p>여러 개의 얼굴을 인식하기 위해서 <a href=https://github.com/k2sebeom/DeepLens-Rekognition-Demo/blob/main/multi-face-compare.py>다음 코드</a> 를 이용할 것입니다. lambda_function.py 를 열고 내용을 모두 지운 후, 코드를 붙여넣기 합니다.</p>
+<ol>
+<li>60번째 줄의 {s3-bucket-name} 을 얼굴 사진이 들어 있는 버켓 이름으로 변경합니다.</li>
+</ol>
+<pre tabindex=0><code class=language-{python} data-lang={python}>def get_resp(client, img_key, img_bytes):
+    try:
+        return {
+            &quot;key&quot;: img_key,
+            &quot;resp&quot;: client.compare_faces(
+                        SourceImage={
+                            'S3Object': {
+                                'Bucket': '{s3 bucket name}',
+                                'Name': img_key
+                            }
+                        },
+                        TargetImage={
+                            'Bytes': img_bytes
+                        }
+            )
+        }
+    except Exception:
+        return None
+</code></pre><ol start=2>
+<li>104번째 줄의 target_dict 를 업데이트합니다. key는 s3 오븐젝트 키를, value 는 각 사진에 해당하는 label 을 작성합니다.</li>
+</ol>
+<pre tabindex=0><code class=language-{python} data-lang={python}>target_dict = {
+    &quot;list.jpeg&quot;: &quot;Names&quot;,
+    &quot;of.png&quot;: &quot;of&quot;,
+    &quot;s3_keys.jpeg&quot;: &quot;faces&quot;
+}
+</code></pre><ol start=3>
+<li>전체 폴더를 다시 zip 파일로 압축합니다.</li>
+</ol>
+<h3 id=람다-함수-생성하기>람다 함수 생성하기</h3>
+<ol>
+<li><a href=https://console.aws.amazon.com/lambda>AWS Lambda 콘솔</a> 에 들어갑니다.</li>
+<li>&ldquo;함수 생성"을 클릭합니다.</li>
+<li>함수 이름을 작성합니다. 이때 함수 이름은 deeplens 로 시작해야 합니다. 예) deeplens_custom_face</li>
+<li>런타임은 Python 3.7 을 선택합니다.</li>
+<li>함수를 생성합니다.</li>
+<li>코드 소스 부분으로 이동한 후, &ldquo;에서 업로드 -> .zip 파일&rdquo; 을 클릭합니다.</li>
+<li>위에서 만든 zip 파일을 업로드합니다.</li>
+<li>페이지 위로 올라가서 &ldquo;작업 -> 새 버전 발행&rdquo; 을 클릭합니다.</li>
+<li>새로운 버전을 발행합니다.</li>
+</ol>
+<h3 id=딥렌즈-프로젝트-생성>딥렌즈 프로젝트 생성</h3>
+<ol>
+<li><a href=https://console.aws.amazon.com/deeplens>AWS DeepLens 콘솔</a> 에 들어갑니다.</li>
+<li>Projects 를 클릭합니다.</li>
+<li>Create new project 클릭하고, Create a new blank project 를 클릭합니다.</li>
+<li>프로젝트 이름과 설명을 작성합니다.</li>
+<li>Project content 에서 Add model 을 한 후, deeplens-face-detection 을 선택합니다. 앞의 과정에서 face-detection 샘플 프로젝트를 배포했다면, 모델이 있을 것입니다.</li>
+<li>Project content 에서 Add function 을 한 후, 위에서 배포한 람다 함수를 선택합니다.</li>
+<li>디바이스로 배포합니다.</li>
+</ol>
+<footer class=footline>
+</footer>
+</div>
+</div>
+<div id=navigation>
+<a class="nav nav-prev" href=/lab3/ title="Amazon Rekognition 연동하기"> <i class="fa fa-chevron-left"></i></a>
+<a class="nav nav-next" href=/lab0/ title="워크샵 시작 전 준비 사항" style=margin-right:0><i class="fa fa-chevron-right"></i></a>
+</div>
+</section>
+<div style=left:-1000px;overflow:scroll;position:absolute;top:-1000px;border:none;box-sizing:content-box;height:200px;margin:0;padding:0;width:200px>
+<div style=border:none;box-sizing:content-box;height:200px;margin:0;padding:0;width:200px></div>
+</div>
+<script src=/js/clipboard.min.js?1645410251></script>
+<script src=/js/perfect-scrollbar.min.js?1645410251></script>
+<script src=/js/perfect-scrollbar.jquery.min.js?1645410251></script>
+<script src=/js/jquery.sticky.js?1645410251></script>
+<script src=/js/featherlight.min.js?1645410251></script>
+<script src=/js/highlight.pack.js?1645410251></script>
+<script>hljs.initHighlightingOnLoad()</script>
+<script src=/js/modernizr.custom-3.6.0.js?1645410251></script>
+<script src=/js/learn.js?1645410251></script>
+<script src=/js/hugo-learn.js?1645410251></script>
+<link href=/mermaid/mermaid.css?1645410251 rel=stylesheet>
+<script src=/mermaid/mermaid.js?1645410251></script>
+<script>mermaid.initialize({startOnLoad:!0})</script>
+</body>
+</html>

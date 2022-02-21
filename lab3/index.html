@@ -1,0 +1,411 @@
+<!doctype html><html lang=ko class="js csstransforms3d">
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=generator content="Hugo 0.92.2">
+<meta name=description content="AWS DeepLens 와  Amazon Rekognition 을 이용한 얼굴 인식 기기 만들기">
+<meta name=author content="SeBeom Lee">
+<link rel=icon href=/images/favicon.png type=image/png>
+<title>Amazon Rekognition 연동하기 :: AWS DeepLens를 이용한 얼굴 인식 기기 만들기</title>
+<link href=/css/nucleus.css?1645410251 rel=stylesheet>
+<link href=/css/fontawesome-all.min.css?1645410251 rel=stylesheet>
+<link href=/css/hybrid.css?1645410251 rel=stylesheet>
+<link href=/css/featherlight.min.css?1645410251 rel=stylesheet>
+<link href=/css/perfect-scrollbar.min.css?1645410251 rel=stylesheet>
+<link href=/css/auto-complete.css?1645410251 rel=stylesheet>
+<link href=/css/atom-one-dark-reasonable.css?1645410251 rel=stylesheet>
+<link href=/css/theme.css?1645410251 rel=stylesheet>
+<link href=/css/hugo-theme.css?1645410251 rel=stylesheet>
+<link href=/css/theme-aws.css?1645410251 rel=stylesheet>
+<script src=/js/jquery-3.3.1.min.js?1645410251></script>
+<style>:root #header+#content>#left>#rlblock_left{display:none!important}</style>
+</head>
+<body data-url=/lab3/>
+<nav id=sidebar class=showVisitedLinks>
+<div id=header-wrapper>
+<div id=header>
+<a id=logo href=/>
+<img src=/images/logo.png height=70px>
+</a>
+</div>
+<div class=searchbox>
+<label for=search-by><i class="fas fa-search"></i></label>
+<input data-search-input id=search-by type=search placeholder>
+<span data-search-clear><i class="fas fa-times"></i></span>
+</div>
+<script type=text/javascript src=/js/lunr.min.js?1645410251></script>
+<script type=text/javascript src=/js/auto-complete.js?1645410251></script>
+<script type=text/javascript>var baseurl="/"</script>
+<script type=text/javascript src=/js/search.js?1645410251></script>
+</div>
+<div class=highlightable>
+<ul class=topics>
+<li data-nav-id=/lab0/ title="워크샵 시작 전 준비 사항" class=dd-item>
+<a href=/lab0/>
+<b>1. </b>워크샵 시작 전 준비 사항
+<i class="fas fa-check read-icon"></i>
+</a>
+</li>
+<li data-nav-id=/lab1/ title="얼굴 인식 프로젝트 배포하기" class=dd-item>
+<a href=/lab1/>
+<b>2. </b>얼굴 인식 프로젝트 배포하기
+<i class="fas fa-check read-icon"></i>
+</a>
+</li>
+<li data-nav-id=/lab2/ title="프로젝트 출력 보기" class=dd-item>
+<a href=/lab2/>
+<b>3. </b>프로젝트 출력 보기
+<i class="fas fa-check read-icon"></i>
+</a>
+</li>
+<li data-nav-id=/lab3/ title="Amazon Rekognition 연동하기" class="dd-item
+parent
+active">
+<a href=/lab3/>
+<b>4. </b>Amazon Rekognition 연동하기
+<i class="fas fa-check read-icon"></i>
+</a>
+<ul>
+<li data-nav-id=/lab3/lab3.1/ title="여러 개의 얼굴 인식하기 (심화)" class=dd-item>
+<a href=/lab3/lab3.1/>
+<b>4-1. </b>여러 개의 얼굴 인식하기 (심화)
+<i class="fas fa-check read-icon"></i>
+</a>
+</li>
+</ul>
+</li>
+</ul>
+<section id=shortcuts>
+<h3></h3>
+<ul>
+<li>
+<a class=padding href=/credits/><i class="fas fa-fw fa-bullhorn"></i> 크레딧</a>
+</li>
+</ul>
+</section>
+<section id=prefooter>
+<hr>
+<ul>
+<li><a class=padding href=# data-clear-history-toggle><i class="fas fa-history fa-fw"></i> </a></li>
+</ul>
+</section>
+<section id=footer>
+© 2020 Amazon Web Services, Inc. or its Affiliates. All rights reserved.
+</section>
+</div>
+</nav>
+<section id=body>
+<div id=overlay></div>
+<div class="padding highlightable">
+<div>
+<div id=top-bar>
+<div id=breadcrumbs itemscope itemtype=http://data-vocabulary.org/Breadcrumb>
+<span id=sidebar-toggle-span>
+<a href=# id=sidebar-toggle data-sidebar-toggle>
+<i class="fas fa-bars"></i>
+</a>
+</span>
+<span id=toc-menu><i class="fas fa-list-alt"></i></span>
+<span class=links>
+<a href=/>AWS DeepLens 로 얼굴 인식 기기 만들기</a> > Amazon Rekognition 연동하기
+</span>
+</div>
+<div class=progress>
+<div class=wrapper>
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#프로젝트-함수-변경하기>프로젝트 함수 변경하기</a></li>
+<li><a href=#함수를-프로젝트에-적용하기>함수를 프로젝트에 적용하기</a></li>
+<li><a href=#함수를-다시-디바이스에-배포하기>함수를 다시 디바이스에 배포하기</a></li>
+<li><a href=#결과-확인하기>결과 확인하기</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div id=head-tags>
+</div>
+<div id=body-inner>
+<h1>
+Amazon Rekognition 연동하기
+</h1>
+<h3 id=프로젝트-함수-변경하기>프로젝트 함수 변경하기</h3>
+<ol>
+<li><a href=https://console.aws.amazon.com/lambda>Lambda 콘솔 페이지</a> 로 이동합니다.</li>
+<li>함수 중에 deeplens-face-detection 이라는 함수를 클릭합니다. 이 함수가 DeepLens 기기에 설치되는 함수입니다.</li>
+<li>함수의 코드를 모두 지우고, 다음 코드로 변경합니다.</li>
+</ol>
+<pre tabindex=0><code class=language-{python} data-lang={python}>from threading import Thread, Event
+import os
+import json
+import numpy as np
+import awscam
+import cv2
+import greengrasssdk
+import sys
+import urllib
+import zipfile
+import time
+
+
+# Latest software has boto3 installed
+try:
+    import boto3
+except Exception:
+    boto_dir = '/tmp/boto_dir'
+    if not os.path.exists(boto_dir):
+        os.mkdir(boto_dir)
+    urllib.urlretrieve(&quot;https://s3.amazonaws.com/dear-demo/boto_3_dist.zip&quot;, &quot;/tmp/boto_3_dist.zip&quot;)
+    with zipfile.ZipFile(&quot;/tmp/boto_3_dist.zip&quot;, &quot;r&quot;) as zip_ref:
+        zip_ref.extractall(boto_dir)
+    sys.path.append(boto_dir)
+    import boto3
+
+
+def mark_face(image, bbox, label=&quot;&quot;):
+    H, W, _ = image.shape
+    x = int(bbox[&quot;Left&quot;] * W)
+    y = int(bbox[&quot;Top&quot;] * H)
+    w = int(bbox[&quot;Width&quot;] * W)
+    h = int(bbox[&quot;Height&quot;] * H)
+    
+    cv2.rectangle(image, (x, y), (x + w, y + h), (255, 165, 20), 10)
+    text_offset = 15
+    cv2.putText(image, label,
+                (x, y - text_offset),
+                cv2.FONT_HERSHEY_SIMPLEX, 2.5, (255, 165, 20), 3)    
+
+
+class LocalDisplay(Thread):
+    &quot;&quot;&quot; Class for facilitating the local display of inference results
+        (as images). The class is designed to run on its own thread. In
+        particular the class dumps the inference results into a FIFO
+        located in the tmp directory (which lambda has access to). The
+        results can be rendered using mplayer by typing:
+        mplayer -demuxer lavf -lavfdopts format=mjpeg:probesize=32 /tmp/results.mjpeg
+    &quot;&quot;&quot;
+    def __init__(self, resolution):
+        &quot;&quot;&quot; resolution - Desired resolution of the project stream &quot;&quot;&quot;
+        # Initialize the base class, so that the object can run on its own
+        # thread.
+        super(LocalDisplay, self).__init__()
+        # List of valid resolutions
+        RESOLUTION = {'1080p' : (1920, 1080), '720p' : (1280, 720), '480p' : (858, 480)}
+        if resolution not in RESOLUTION:
+            raise Exception(&quot;Invalid resolution&quot;)
+        self.resolution = RESOLUTION[resolution]
+        # Initialize the default image to be a white canvas. Clients
+        # will update the image when ready.
+        self.frame = cv2.imencode('.jpg', 255*np.ones([640, 480, 3]))[1]
+        self.stop_request = Event()
+
+    def run(self):
+        &quot;&quot;&quot; Overridden method that continually dumps images to the desired
+            FIFO file.
+        &quot;&quot;&quot;
+        # Path to the FIFO file. The lambda only has permissions to the tmp
+        # directory. Pointing to a FIFO file in another directory
+        # will cause the lambda to crash.
+        result_path = '/tmp/results.mjpeg'
+        # Create the FIFO file if it doesn't exist.
+        if not os.path.exists(result_path):
+            os.mkfifo(result_path)
+        # This call will block until a consumer is available
+        with open(result_path, 'w') as fifo_file:
+            while not self.stop_request.isSet():
+                try:
+                    # Write the data to the FIFO file. This call will block
+                    # meaning the code will come to a halt here until a consumer
+                    # is available.
+                    fifo_file.write(self.frame.tobytes())
+                except IOError:
+                    continue
+
+    def set_frame_data(self, frame):
+        &quot;&quot;&quot; Method updates the image data. This currently encodes the
+            numpy array to jpg but can be modified to support other encodings.
+            frame - Numpy array containing the image data tof the next frame
+                    in the project stream.
+        &quot;&quot;&quot;
+        ret, jpeg = cv2.imencode('.jpg', cv2.resize(frame, self.resolution))
+        if not ret:
+            raise Exception('Failed to set frame data')
+        self.frame = jpeg
+
+    def join(self):
+        self.stop_request.set()
+
+def infinite_infer_run():
+    &quot;&quot;&quot; Entry point of the lambda function&quot;&quot;&quot;
+    try:
+        # This face detection model is implemented as single shot detector (ssd).
+        model_type = 'ssd'
+        output_map = {1: 'face'}
+        # Create an IoT client for sending to messages to the cloud.
+        client = greengrasssdk.client('iot-data')
+        iot_topic = '$aws/things/{}/infer'.format(os.environ['AWS_IOT_THING_NAME'])
+        # Create a local display instance that will dump the image bytes to a FIFO
+        # file that the image can be rendered locally.
+        local_display = LocalDisplay('480p')
+        local_display.start()
+        # The sample projects come with optimized artifacts, hence only the artifact
+        # path is required.
+        model_path = '/opt/awscam/artifacts/mxnet_deploy_ssd_FP16_FUSED.xml'
+        # Load the model onto the GPU.
+        client.publish(topic=iot_topic, payload='Loading face detection model')
+        model = awscam.Model(model_path, {'GPU': 1})
+        client.publish(topic=iot_topic, payload='Face detection model loaded')
+        
+        rekog = boto3.client(&quot;rekognition&quot;)
+        client.publish(topic=iot_topic, payload='Rekognition client crearted')
+        # Set the threshold for detection
+        detection_threshold = 0.25
+        # The height and width of the training set images
+        input_height = 300
+        input_width = 300
+        # Do inference until the lambda is killed.
+        while True:
+            # Get a frame from the video stream
+            ret, frame = awscam.getLastFrame()
+            if not ret:
+                raise Exception('Failed to get frame from the stream')
+            # Resize frame to the same size as the training set.
+            frame_resize = cv2.resize(frame, (input_height, input_width))
+            # Run the images through the inference engine and parse the results using
+            # the parser API, note it is possible to get the output of doInference
+            # and do the parsing manually, but since it is a ssd model,
+            # a simple API is provided.
+            parsed_inference_results = model.parseResult(model_type,
+                                                         model.doInference(frame_resize))
+            # Dictionary to be filled with labels and probabilities for MQTT
+            cloud_output = {}
+            # Get the detected faces and probabilities
+            for obj in parsed_inference_results[model_type]:
+                if obj['prob'] &gt; detection_threshold:
+                    # Store label and probability to send to cloud
+                    cloud_output[output_map[obj['label']]] = obj['prob']
+            # If there is any face detected
+            if cloud_output:
+                # Make a rekognition api call
+                ret, jpeg = cv2.imencode(&quot;.jpg&quot;, frame)
+                resp = rekog.recognize_celebrities(
+                        Image={
+                            &quot;Bytes&quot;: jpeg.tobytes()
+                        }
+                    )
+                # Uncomment below to check result
+                # client.publish(topic=iot_topic, payload=json.dumps(resp))
+                celebs = resp['CelebrityFaces']
+                # Mark faces on the frame
+                for face in celebs:
+                    bbox = face[&quot;Face&quot;]['BoundingBox']
+                    mark_face(frame, bbox, label=face[&quot;Name&quot;])
+
+                uncelebs = resp[&quot;UnrecognizedFaces&quot;]
+                for face in uncelebs:
+                    bbox = face['BoundingBox']
+                    mark_face(frame, bbox, label=&quot;&quot;)
+            
+            # Set the next frame in the local display stream.
+            local_display.set_frame_data(frame)
+            # Send results to the cloud
+            client.publish(topic=iot_topic, payload=json.dumps(cloud_output))
+    except Exception as ex:
+        client.publish(topic=iot_topic, payload='Error in face detection lambda: {}'.format(ex))
+
+infinite_infer_run()
+</code></pre><p>기존 코드에서 바뀐 부분만 간단히 살펴보겠습니다.</p>
+<pre tabindex=0><code class=language-{python} data-lang={python}>try:
+    import boto3
+except Exception:
+    boto_dir = '/tmp/boto_dir'
+    if not os.path.exists(boto_dir):
+        os.mkdir(boto_dir)
+    urllib.urlretrieve(&quot;https://s3.amazonaws.com/dear-demo/boto_3_dist.zip&quot;, &quot;/tmp/boto_3_dist.zip&quot;)
+    with zipfile.ZipFile(&quot;/tmp/boto_3_dist.zip&quot;, &quot;r&quot;) as zip_ref:
+        zip_ref.extractall(boto_dir)
+    sys.path.append(boto_dir)
+    import boto3
+</code></pre><p>AWS Python SDK 인 boto3 를 임포트 하는 부분입니다. 최신 버전의 DeepLens 소프트웨어는 boto3 가 설치되어 있지만, 그렇지 않은 경우, boto3 패키지를 설치하고 임포트합니다.</p>
+<pre tabindex=0><code class=language-{python} data-lang={python}>def mark_face(image, bbox, label=&quot;&quot;):
+    H, W, _ = image.shape
+    x = int(bbox[&quot;Left&quot;] * W)
+    y = int(bbox[&quot;Top&quot;] * H)
+    w = int(bbox[&quot;Width&quot;] * W)
+    h = int(bbox[&quot;Height&quot;] * H)
+    
+    cv2.rectangle(image, (x, y), (x + w, y + h), (255, 165, 20), 10)
+    text_offset = 15
+    cv2.putText(image, label,
+                (x, y - text_offset),
+                cv2.FONT_HERSHEY_SIMPLEX, 2.5, (255, 165, 20), 3)    
+</code></pre><p>cv2 를 이용해서, 이미지에 bounding box 와 라벨을 삽입하는 helper function 입니다.</p>
+<pre tabindex=0><code class=language-{python} data-lang={python}># If there is any face detected
+if cloud_output:
+    # Make a rekognition api call
+    ret, jpeg = cv2.imencode(&quot;.jpg&quot;, frame)
+    resp = rekog.recognize_celebrities(
+            Image={
+                &quot;Bytes&quot;: jpeg.tobytes()
+            }
+        )
+    # Uncomment below to check result
+    # client.publish(topic=iot_topic, payload=json.dumps(resp))
+    celebs = resp['CelebrityFaces']
+    # Mark faces on the frame
+    for face in celebs:
+        bbox = face[&quot;Face&quot;]['BoundingBox']
+        mark_face(frame, bbox, label=face[&quot;Name&quot;])
+
+    uncelebs = resp[&quot;UnrecognizedFaces&quot;]
+    for face in uncelebs:
+        bbox = face['BoundingBox']
+        mark_face(frame, bbox, label=&quot;&quot;)
+</code></pre><p>만약 이미지에서 얼굴이 한 개라도 검출된다면 Rekognition API 를 호출하여 결과를 받아온 후, 유명인들의 얼굴에는 알맞은 라벨을 삽입하고, 결과가 없는 얼굴은 라벨이 없이 표시만 합니다.</p>
+<h3 id=함수를-프로젝트에-적용하기>함수를 프로젝트에 적용하기</h3>
+<ol>
+<li>코드를 변경했으면, Deploy 를 눌러서 Lambda 함수를 저장합니다.</li>
+<li>페이지 상단의 Action 을 눌러서 Publish new version 을 선택합니다.
+<img src=./images/new_version.png alt=NewVersion></li>
+<li><a href=https://console.aws.amazon.com/deeplens#projects>DeepLens 프로젝트 콘솔</a> 로 이동합니다.</li>
+<li>우리가 생성한 얼굴 인식 프로젝트를 클릭합니다.</li>
+<li>Edit 버튼을 눌러 편집 화면으로 진입합니다.</li>
+<li>Project Content 부분에서 Function 을 누르면, 프로젝트에서 사용하고 있는 함수에 대한 정보를 변경할 수 있습니다. Version 을 누르면, 새로운 버전이 더 생성된 것을 확인할 수 있습니다. 새로운 버전을 선택합니다.</li>
+<li>Save 버튼을 눌러 저장합니다.</li>
+</ol>
+<h3 id=함수를-다시-디바이스에-배포하기>함수를 다시 디바이스에 배포하기</h3>
+<p><a href=/deeplens-rekognition/lab1>함수 배포하기</a> 를 참조하여, 다시 함수를 디바이스에 배포합니다.</p>
+<h3 id=결과-확인하기>결과 확인하기</h3>
+<p><a href=/deeplens-rekognition/lab3>프로젝트 출력 보기</a> 에서 한 것처럼, View video stream 주소로 가서, 결과를 확인합니다.</p>
+<footer class=footline>
+</footer>
+</div>
+</div>
+<div id=navigation>
+<a class="nav nav-prev" href=/lab2/ title="프로젝트 출력 보기"> <i class="fa fa-chevron-left"></i></a>
+<a class="nav nav-next" href=/lab3/lab3.1/ title="여러 개의 얼굴 인식하기 (심화)" style=margin-right:0><i class="fa fa-chevron-right"></i></a>
+</div>
+</section>
+<div style=left:-1000px;overflow:scroll;position:absolute;top:-1000px;border:none;box-sizing:content-box;height:200px;margin:0;padding:0;width:200px>
+<div style=border:none;box-sizing:content-box;height:200px;margin:0;padding:0;width:200px></div>
+</div>
+<script src=/js/clipboard.min.js?1645410251></script>
+<script src=/js/perfect-scrollbar.min.js?1645410251></script>
+<script src=/js/perfect-scrollbar.jquery.min.js?1645410251></script>
+<script src=/js/jquery.sticky.js?1645410251></script>
+<script src=/js/featherlight.min.js?1645410251></script>
+<script src=/js/highlight.pack.js?1645410251></script>
+<script>hljs.initHighlightingOnLoad()</script>
+<script src=/js/modernizr.custom-3.6.0.js?1645410251></script>
+<script src=/js/learn.js?1645410251></script>
+<script src=/js/hugo-learn.js?1645410251></script>
+<link href=/mermaid/mermaid.css?1645410251 rel=stylesheet>
+<script src=/mermaid/mermaid.js?1645410251></script>
+<script>mermaid.initialize({startOnLoad:!0})</script>
+</body>
+</html>
