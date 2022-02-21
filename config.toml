@@ -1,5 +1,5 @@
 # baseURL 변경
-baseURL = "/"
+baseURL = "/deeplens-rekognition-workshop/"
 languageCode = "ko-KR"
 defaultContentLanguage = "ko"
 
@@ -9,7 +9,6 @@ theme = "hugo-theme-learn"
 themesdir = "."
 metaDataFormat = "yaml"
 defaultContentLanguageInSubdir= true
-#ignoreFiles = [ "\\.*lab3\\.*" ]
 
 # description, author 변경
 [params]
